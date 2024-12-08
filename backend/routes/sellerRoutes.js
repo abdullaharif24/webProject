@@ -6,6 +6,12 @@ const sellerController = require('../controllers/sellerController');
 router.post('/register', sellerController.register);
 router.post('/login', sellerController.login);
 
+
+
+router.get('/users/:email', sellerController.getUserByEmail); // Adjust the route prefix as needed
+
+module.exports = router;
+
 // Example of PUT route for updating seller profile
 router.put('/update-profile', sellerController.updateProfile);
 
@@ -13,5 +19,7 @@ router.put('/update-profile', sellerController.updateProfile);
 router.post('/add-product', sellerController.addProduct);
 router.put('/update-product/:id', sellerController.updateProduct);
 router.delete('/delete-product/:id', sellerController.deleteProduct);
+
+
 
 module.exports = router;

@@ -56,6 +56,28 @@ const login = async (req, res) => {
     }
 };
 
+// Get User by Email
+const getUserByEmail = async (req, res) => {
+    const { email } = req.params; // Assuming the email is passed as a URL parameter
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
+
+    try {
+        const user = await Seller.findOne({ email }); // Replace `Seller` with your model name
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user by email:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
 // Update Profile
 const updateProfile = async (req, res) => {
     const { sellerId, name, email } = req.body;
@@ -130,5 +152,6 @@ module.exports = {
     updateProfile,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getUserByEmail
 };
