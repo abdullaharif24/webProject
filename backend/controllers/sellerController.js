@@ -1,35 +1,31 @@
-const bcrypt = require('bcryptjs'); // Use bcryptjs to handle hashing
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Seller = require('../models/Seller');
 const Product = require('../models/Product');
-// const nodemailer = require('nodemailer'); // Removed since no email verification is required
 
-exports.register = async (req, res) => {
-    console.log(req.body);  // Debugging line to log the incoming request
+// Register Seller
+const register = async (req, res) => {
+    console.log(req.body); // Debugging log
 
-    const { email, password, name  } = req.body;
+    const { email, password, name } = req.body;
 
     console.log("Here is the password", password);
-  
+
     if (!password || password.length < 6) {
         return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
-      
+
     try {
-        // Check if the seller already exists
         const existingSeller = await Seller.findOne({ email });
         if (existingSeller) {
             return res.status(400).json({ message: 'Seller already exists' });
         }
-  
-        // Hash the password
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        
-        // Create a new seller
+
         const newSeller = new Seller({ email, password: hashedPassword, name });
         await newSeller.save();
-  
-        // Send response without email verification
+
         res.status(201).json({ message: 'Seller registered successfully!' });
     } catch (error) {
         console.error(error);
@@ -38,7 +34,7 @@ exports.register = async (req, res) => {
 };
 
 // Seller Login
-exports.login = async (req, res) => {
+const login = async (req, res) => {
     const { email, password } = req.body;
     try {
         const seller = await Seller.findOne({ email });
@@ -61,7 +57,7 @@ exports.login = async (req, res) => {
 };
 
 // Update Profile
-exports.updateProfile = async (req, res) => {
+const updateProfile = async (req, res) => {
     const { sellerId, name, email } = req.body;
     try {
         const updatedSeller = await Seller.findByIdAndUpdate(
@@ -80,7 +76,7 @@ exports.updateProfile = async (req, res) => {
 };
 
 // Add Product
-exports.addProduct = async (req, res) => {
+const addProduct = async (req, res) => {
     const { name, description, price, sellerId } = req.body;
     try {
         const newProduct = new Product({ name, description, price, seller: sellerId });
@@ -93,7 +89,7 @@ exports.addProduct = async (req, res) => {
 };
 
 // Update Product
-exports.updateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
     const { id } = req.params;
     const { name, description, price } = req.body;
     try {
@@ -113,7 +109,7 @@ exports.updateProduct = async (req, res) => {
 };
 
 // Delete Product
-exports.deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
     const { id } = req.params;
     try {
         const deletedProduct = await Product.findByIdAndDelete(id);
@@ -125,4 +121,14 @@ exports.deleteProduct = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
+};
+
+// Export all the functions as an object
+module.exports = {
+    register,
+    login,
+    updateProfile,
+    addProduct,
+    updateProduct,
+    deleteProduct
 };
